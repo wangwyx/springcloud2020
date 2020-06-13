@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+
+    <springProperty scope="context" source="logging.file.base" name="baseLogHome" defaultValue="/data/apps/geek" />
+    <property name="LOG_HOME" value="${baseLogHome}/logs/${applicationName}"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder 默认配置为PatternLayoutEncoder -->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{15} [%M:%L] %X{Model} %X{Service} %X{traceId}  - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- all appender -->
+    <appender name="allLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${applicationName}.all.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_HOME}/history/%d{yyyyMM,aux}/${applicationName}.all.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{15} [%M:%L] %X{Model} %X{Service} %X{traceId}  - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- error appender -->
+    <appender name="errorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <File>${LOG_HOME}/${applicationName}.error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/history/%d{yyyyMM,aux}/${applicationName}.error.log.%d{yyyyMMdd}</FileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{15} [%M:%L] %X{Model} %X{Service} %X{traceId}  - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- sql appender -->
+    <appender name="sqlLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${applicationName}.sql.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_HOME}/history/%d{yyyyMM,aux}/${applicationName}.sql.log.%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{15} [%M:%L] %X{Model} %X{Service} %X{traceId}  - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="perf4jFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${applicationName}.perf4j.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/history/%d{yyyyMM,aux}/${applicationName}.perf4j.log.%d{yyyyMMdd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%msg%n</Pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="daoPerf4j" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${applicationName}.daoPerf4j.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/history/%d{yyyyMM,aux}/${applicationName}.daoPerf4j.log.%d{yyyyMMdd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%msg%n</Pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!--异步输出日志-->
+    <!-- 异步输出 -->
+    <appender name="errorLogFile" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>2048</queueSize>
+        <IncludeCallerData>true</IncludeCallerData>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="errorLog"/>
+    </appender>
+
+    <!-- 异步输出 -->
+    <appender name="allLogFile" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>2048</queueSize>
+        <IncludeCallerData>true</IncludeCallerData>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="allLog"/>
+    </appender>
+
+    <appender name ="sqlLogFile" class= "ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold >0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>2048</queueSize>
+        <IncludeCallerData>true</IncludeCallerData>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref ="sqlLog"/>
+    </appender>
+
+    <!--开发环境日志配置-->
+    <springProfile name="dev">
+        <logger name="org.hibernate.SQL" additivity="false" >
+            <level value="DEBUG"/>
+            <appender-ref ref="sqlLogFile"/>
+        </logger>
+        <!-- loggers -->
+        <root level="INFO">
+            <appender-ref ref="console"/>
+            <appender-ref ref="errorLogFile"/>
+            <appender-ref ref="allLogFile"/>
+        </root>
+    </springProfile>
+    <!--测试环境日志配置-->
+    <springProfile name="release">
+        <logger name="org.hibernate.SQL" additivity="false" >
+            <level value="DEBUG"/>
+            <appender-ref ref="sqlLogFile"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="errorLogFile"/>
+            <appender-ref ref="allLogFile"/>
+        </root>
+    </springProfile>
+
+
+    <!--生产环境日志配置-->
+    <springProfile name="online">
+        <logger name="org.hibernate.SQL" additivity="false" >
+            <level value="DEBUG"/>
+            <appender-ref ref="sqlLogFile"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="errorLogFile"/>
+            <appender-ref ref="allLogFile"/>
+        </root>
+    </springProfile>
+
+    <!--生产环境日志配置-->
+    <springProfile name="pre">
+        <logger name="org.hibernate.SQL" additivity="false" >
+            <level value="DEBUG"/>
+            <appender-ref ref="sqlLogFile"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="errorLogFile"/>
+            <appender-ref ref="allLogFile"/>
+        </root>
+    </springProfile>
+</configuration>
