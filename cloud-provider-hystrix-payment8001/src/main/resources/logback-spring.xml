@@ -17,6 +17,7 @@
     <!-- all appender -->
     <appender name="allLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${LOG_HOME}/${applicationName}.all.log</File>
+        <!--滚动策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${LOG_HOME}/history/%d{yyyyMM,aux}/${applicationName}.all.log.%d{yyyyMMdd}</fileNamePattern>
